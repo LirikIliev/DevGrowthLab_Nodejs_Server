@@ -1,0 +1,47 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.pid.lock
+
+# Directory for compiled TypeScript files
+dist/
+build/
+
+# Dependency directories
+node_modules/
+
+# Environment variable files
+.env
+.env.* # For environment-specific configs like .env.production
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.lock
+
+# Test coverage output
+coverage/
+
+# Debugging files
+*.log
+*.trace
