@@ -45,3 +45,6 @@ coverage/
 # Debugging files
 *.log
 *.trace
+
+# Do NOT ignore src
+!src/
