@@ -1,6 +1,5 @@
 import { model, Schema } from 'mongoose';
 import { ERROR_MESSAGES } from './config';
-import { URL_REGEX } from '../config/config';
 
 const ProductSchema = new Schema({
   title: {
@@ -33,11 +32,12 @@ const ProductSchema = new Schema({
     default: new Date(),
   },
   category: {
-    name: {
-      type: String,
-      require: [true, ERROR_MESSAGES.REQUIRE('Category name')],
-    },
+    type: Schema.ObjectId,
     ref: 'Categories',
+  },
+  admin: {
+    type: Schema.ObjectId,
+    ref: 'Users',
   },
 });
 
