@@ -8,3 +8,8 @@ export const ERROR_MESSAGES = {
   PRICE: 'Price must be positive!',
   REQUIRE: (reqValue: string) => `${reqValue} is/are required!`,
 };
+
+export const USERS_ROLE = {
+  ADMIN: 'admin',
+  GUEST: 'guest',
+};
