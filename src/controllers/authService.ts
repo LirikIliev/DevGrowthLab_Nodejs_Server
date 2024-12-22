@@ -1,18 +1,17 @@
 import { RequestHandler } from 'express';
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
-import jwt from 'jsonwebtoken';
 
+import { USER_FORM_KEYS } from './config';
+import userHandler from '../services/auth';
 import {
   UserLoginDataType,
   UserModelDataType,
   UserTokenType,
 } from '../types/types';
-import { USER_FORM_KEYS } from './config';
-import { hasEmptyFields } from '../routes/helpers/helpers';
-import userHandler from '../services/auth';
 import { BCRYPT_SALT } from '../config/config';
 import { createToken } from './helpers/helpers';
+import { hasEmptyFields } from '../routes/helpers/helpers';
 
 const postLoginRequestHandler: RequestHandler<UserLoginDataType> = async (
   req,
