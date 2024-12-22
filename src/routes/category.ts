@@ -1,28 +1,34 @@
 import { Router } from 'express';
+
 import categoryService from '../controllers/categoryService';
 import { adminCheckMiddleware } from '../middlewares/adminCheckMiddleware';
+import { authenticateMiddleware } from '../middlewares/authenticatedMiddleware';
+import ROUTE_PATHS from './config';
 
 const router = Router();
 
 //GET => get list of categories;
-router.get('/public/list-of-categories', categoryService.getListOfCategory);
+router.get(ROUTE_PATHS.GET_CATEGORIES, categoryService.getListOfCategory);
 // GET => get category by id;
-router.get('/public/:categoryId/category', categoryService.getCategoryById);
+router.get(ROUTE_PATHS.ADD_CATEGORY, categoryService.getCategoryById);
 //POST => add new category;
 router.post(
-  '/private/:userId/add-new-category',
+  ROUTE_PATHS.ADD_CATEGORY,
+  authenticateMiddleware,
   adminCheckMiddleware,
   categoryService.addNewCategory
 );
 //PUT =>  update category;
 router.put(
-  '/private/:userId/:categoryId/update-category',
+  ROUTE_PATHS.UPDATE_CATEGORY,
+  authenticateMiddleware,
   adminCheckMiddleware,
   categoryService.updateCategory
 );
 //DELETE => remove categories;
 router.delete(
-  '/private/:userId/:categoryId/remove-category',
+  ROUTE_PATHS.REMOVE_CATEGORY,
+  authenticateMiddleware,
   adminCheckMiddleware,
   categoryService.removeCategory
 );

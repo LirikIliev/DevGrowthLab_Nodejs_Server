@@ -2,27 +2,32 @@ import { Router } from 'express';
 
 import productHandlers from '../controllers/productServices';
 import { adminCheckMiddleware } from '../middlewares/adminCheckMiddleware';
+import { authenticateMiddleware } from '../middlewares/authenticatedMiddleware';
+import ROUTE_PATHS from './config';
 
 const router = Router();
 // GET => get all products (list of them)
-router.get('/public/list-of-products', productHandlers.getListOfProducts);
+router.get(ROUTE_PATHS.GET_PRODUCTS, productHandlers.getListOfProducts);
 // GET => get product by id;
-router.get('/public/:productId/product-data', productHandlers.getProductById);
+router.get(ROUTE_PATHS.GET_PRODUCT, productHandlers.getProductById);
 // POST => add new product;
 router.post(
-  '/private/:userId/add-new-product',
+  ROUTE_PATHS.ADD_PRODUCT,
+  authenticateMiddleware,
   adminCheckMiddleware,
   productHandlers.addNewProduct
 );
 // UPDATE => update product by id;
 router.put(
-  '/private/:userId/:productId/update-product',
+  ROUTE_PATHS.UPDATE_PRODUCT,
+  authenticateMiddleware,
   adminCheckMiddleware,
   productHandlers.updateProduct
 );
 // DELETE => delete product by id;
 router.delete(
-  '/private/:useId/:productId/delete-product',
+  ROUTE_PATHS.REMOVE_PRODUCT,
+  authenticateMiddleware,
   adminCheckMiddleware,
   productHandlers.removeProduct
 );
