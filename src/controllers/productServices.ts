@@ -1,10 +1,10 @@
 import { RequestHandler } from 'express';
 
+import { PRODUCT_FORM_KEYS } from './config';
+import userHandler from '../services/auth';
 import productHandler from '../services/product';
 import { ProductModelDataType } from '../types/types';
 import { hasEmptyFields } from '../routes/helpers/helpers';
-import { PRODUCT_FORM_KEYS } from './config';
-import userHandler from '../services/auth';
 
 type ProductQueryType = { productId: string };
 type ProductUpdateRemoveQuery = { productId: string; userId: string };
