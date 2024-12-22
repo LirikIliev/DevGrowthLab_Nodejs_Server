@@ -1,30 +1,18 @@
 import { RequestHandler } from 'express';
 
-import {
-  addNewCategoryToDb,
-  categoryExistingCheck,
-  findCategoryById,
-  getAllCategories,
-  rmvCategory,
-  updCategory,
-} from '../services/category';
-import { CategoryModelDataType } from '../types/types';
-import { hasEmptyFields } from '../routes/helpers/helpers';
 import { CATEGORY_FORM_KEYS } from './config';
+import categoryService from '../services/category';
+import { CategoryModelDataType } from '../types/types';
 import userHandler from '../services/auth';
-import { USERS_ROLE } from '../config/config';
+import { hasEmptyFields } from '../routes/helpers/helpers';
 
 type CategoryQueryType = {
   categoryId: string;
 };
 
-interface PrivateCategoryQueryType extends CategoryQueryType {
-  userId: string;
-}
-
 const getListOfCategory: RequestHandler = async (req, res) => {
   try {
-    const categories = await getAllCategories();
+    const categories = await categoryService.getCategories();
     res.status(200).json({ message: 'Categories', categories });
   } catch (error) {
     //! to add error handling functionality
@@ -35,7 +23,7 @@ const getListOfCategory: RequestHandler = async (req, res) => {
 const getCategoryById: RequestHandler<CategoryQueryType> = async (req, res) => {
   const categoryId = req.params.categoryId;
   try {
-    const category = await findCategoryById(categoryId);
+    const category = await categoryService.findCategoryById(categoryId);
 
     res.status(200).json({ message: 'Category', category });
   } catch (error) {
@@ -47,7 +35,12 @@ const getCategoryById: RequestHandler<CategoryQueryType> = async (req, res) => {
 const addNewCategory: RequestHandler = async (req, res) => {
   const body = req.body as CategoryModelDataType;
   const hasBodyEmptyFields = hasEmptyFields(CATEGORY_FORM_KEYS, body);
-  const userId = req.params.userId;
+  const userId = req.user?._id;
+
+  if (!userId) {
+    res.status(401).json({ message: 'User is not authenticated!' });
+    return;
+  }
 
   if (hasBodyEmptyFields) {
     res.status(412).json({ message: 'Body is not corrected fulfilled!' });
@@ -55,7 +48,9 @@ const addNewCategory: RequestHandler = async (req, res) => {
   }
 
   try {
-    const isCategoryExist = await categoryExistingCheck({ name: body.name });
+    const isCategoryExist = await categoryService.checkCategory({
+      name: body.name,
+    });
     if (isCategoryExist) {
       res.status(412).json({ message: 'This category already exist.' });
       return;
@@ -67,7 +62,7 @@ const addNewCategory: RequestHandler = async (req, res) => {
         admin: userId,
       })
     );
-    const newCategory = await addNewCategoryToDb(updatedBody);
+    const newCategory = await categoryService.addNewCategory(updatedBody);
     const categoryId = newCategory._id;
 
     if (categoryId) await userHandler.addCategoryToUser(userId, categoryId);
@@ -80,13 +75,10 @@ const addNewCategory: RequestHandler = async (req, res) => {
   }
 };
 
-const updateCategory: RequestHandler<PrivateCategoryQueryType> = async (
-  req,
-  res
-) => {
+const updateCategory: RequestHandler<CategoryQueryType> = async (req, res) => {
   const body = req.body as CategoryModelDataType;
   const categoryId = req.params.categoryId;
-  const { userId } = req.params;
+  const userId = req.user?._id;
 
   const hasBodyEmptyFields = hasEmptyFields(CATEGORY_FORM_KEYS, body);
   if (hasBodyEmptyFields) {
@@ -95,7 +87,7 @@ const updateCategory: RequestHandler<PrivateCategoryQueryType> = async (
   }
 
   try {
-    const category = await findCategoryById(categoryId);
+    const category = await categoryService.findCategoryById(categoryId);
     if (!category) {
       res.status(404).json({ message: 'The category is not exist' });
       return;
@@ -114,7 +106,10 @@ const updateCategory: RequestHandler<PrivateCategoryQueryType> = async (
         updatedAt: new Date(),
       })
     );
-    const updatedCategory = await updCategory(categoryId, updatedBody);
+    const updatedCategory = await categoryService.updCategory(
+      categoryId,
+      updatedBody
+    );
     res
       .status(200)
       .json({ message: 'Category update was successful.', updatedCategory });
@@ -123,15 +118,12 @@ const updateCategory: RequestHandler<PrivateCategoryQueryType> = async (
   }
 };
 
-const removeCategory: RequestHandler<PrivateCategoryQueryType> = async (
-  req,
-  res
-) => {
+const removeCategory: RequestHandler<CategoryQueryType> = async (req, res) => {
   const categoryId = req.params.categoryId;
-  const { userId } = req.params;
+  const userId = req.user?._id;
 
   try {
-    const category = await findCategoryById(categoryId);
+    const category = await categoryService.findCategoryById(categoryId);
 
     if (!category) {
       res.status(404).json({ message: 'The category is not exist' });
@@ -146,7 +138,7 @@ const removeCategory: RequestHandler<PrivateCategoryQueryType> = async (
       return;
     }
 
-    await rmvCategory(categoryId);
+    await categoryService.rmvCategory(categoryId);
     await userHandler.rmvCategoryFromUser(userId, categoryId);
     res.status(200).json({ message: 'Category was successfully removed.' });
   } catch (error) {
