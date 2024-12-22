@@ -5,18 +5,31 @@ import { Types } from 'mongoose';
 
 type GetUserType = Partial<IUser>;
 
-export const findUsers = (data: GetUserType): Promise<IUser[] | []> =>
+const findUsers = (data: GetUserType): Promise<IUser[] | []> =>
   User.find(data).exec();
-
-export const findUser = (data: GetUserType): Promise<IUser | null> =>
+const findUser = (data: GetUserType): Promise<IUser | null> =>
   User.findOne(data).exec();
-export const addNewUser = (data: UserModelDataType) => new User(data).save();
-export const emailCheck = (email: string) => User.isEmailExist(email);
-export const addCategoryToUser = (userId: string, categoryId: Types.ObjectId) =>
+const findUserById = (userId: string): Promise<IUser | null> =>
+  User.findById(userId);
+const addNewUser = (data: UserModelDataType) => new User(data).save();
+const emailCheck = (email: string) => User.isEmailExist(email);
+const addCategoryToUser = (userId: string, categoryId: Types.ObjectId) =>
   User.addCategory(userId, categoryId);
-export const rmvCategoryFromUser = (userId: string, categoryId: string) =>
+const rmvCategoryFromUser = (userId: string, categoryId: string) =>
   User.removeCategory(userId, categoryId);
-export const addProductToUser = (userId: string, productId: Types.ObjectId) =>
+const addProductToUser = (userId: string, productId: Types.ObjectId) =>
   User.addProduct(userId, productId);
-export const rmvProductFromUser = (userId: string, productId: string) =>
+const rmvProductFromUser = (userId: string, productId: string) =>
   User.removeProduct(userId, productId);
+
+export default {
+  findUsers,
+  findUser,
+  findUserById,
+  addNewUser,
+  emailCheck,
+  addCategoryToUser,
+  rmvCategoryFromUser,
+  addProductToUser,
+  rmvProductFromUser,
+};
