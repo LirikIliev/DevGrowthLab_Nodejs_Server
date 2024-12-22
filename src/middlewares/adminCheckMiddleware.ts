@@ -1,18 +1,18 @@
-import { RequestHandler } from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 
 import userHandler from '../services/auth';
 import { USERS_ROLE } from '../config/config';
 
-type AdminCheckQuery = {
-  userId: string;
-};
-
-export const adminCheckMiddleware: RequestHandler<AdminCheckQuery> = async (
-  req,
-  res,
-  next
+export const adminCheckMiddleware: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
-  const { userId } = req.params;
+  const userId = req.user ? req.user?._id : '';
+  if (!userId) {
+    res.status(401).json({ message: 'User is not authenticated!' });
+    return;
+  }
 
   try {
     const user = await userHandler.findUser({ _id: userId });
