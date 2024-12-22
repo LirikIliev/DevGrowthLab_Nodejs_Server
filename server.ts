@@ -5,11 +5,13 @@ import authRoutes from './src/routes/authRoutes';
 import productRoutes from './src/routes/productRoutes';
 import categoryRoutes from './src/routes/category';
 import { databaseConnection } from './src/db/database';
+import { headersMiddleware } from './src/middlewares/headersMiddleware';
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(headersMiddleware);
 
 app.use('/user', authRoutes);
 app.use('/product', productRoutes);
