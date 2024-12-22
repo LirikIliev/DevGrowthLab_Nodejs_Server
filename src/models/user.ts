@@ -1,6 +1,6 @@
 import { model, ObjectId, Schema, Types } from 'mongoose';
-import { EMAIL_REGEX, URL_REGEX } from '../config/config';
-import { ERROR_MESSAGES, USERS_ROLE } from './config';
+import { EMAIL_REGEX, URL_REGEX, USERS_ROLE } from '../config/config';
+import { ERROR_MESSAGES } from './config';
 import { IUser, IUserModel } from './modelTypes';
 
 const UserSchema = new Schema<IUser>({
