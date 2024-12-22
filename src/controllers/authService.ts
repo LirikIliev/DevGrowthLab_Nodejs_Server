@@ -1,12 +1,18 @@
 import { RequestHandler } from 'express';
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
 
-import { UserLoginDataType, UserModelDataType } from '../types/types';
+import {
+  UserLoginDataType,
+  UserModelDataType,
+  UserTokenType,
+} from '../types/types';
 import { USER_FORM_KEYS } from './config';
 import { hasEmptyFields } from '../routes/helpers/helpers';
 import userHandler from '../services/auth';
 import { BCRYPT_SALT } from '../config/config';
+import { createToken } from './helpers/helpers';
 
 const postLoginRequestHandler: RequestHandler<UserLoginDataType> = async (
   req,
@@ -24,16 +30,30 @@ const postLoginRequestHandler: RequestHandler<UserLoginDataType> = async (
 
   try {
     const user = await userHandler.findUser({ email: body.email });
+
+    if (!user) {
+      res.status(404).json({ message: 'User is not found' });
+      return;
+    }
     const userPass = user?.password ? user.password : '';
     const isPasswordCorrect = await bcrypt.compare(body.password, userPass);
 
     if (!isPasswordCorrect) {
-      res.status(404).json({ message: 'User was is not found' });
+      res.status(401).json({ message: 'Wrong email or password' });
       return;
     }
 
-    res.status(200).json({ message: 'User is logged successfully!', user });
+    const tokenData = {
+      _id: user._id,
+      email: user.email,
+      name: user.name,
+      password: user.password,
+      role: user.role,
+    } as unknown as UserTokenType;
+    const token = createToken(tokenData);
+    res.status(200).json({ message: 'User is logged successfully!', token });
   } catch (error) {
+    //! to set error handling functionality!
     console.error(error);
   }
 };
@@ -62,7 +82,16 @@ const postRegistrationRequestHandler: RequestHandler = async (req, res) => {
 
     const userData = await userHandler.addNewUser(hashedData);
 
-    res.status(201).json({ message: 'Successfully created!', userData });
+    const tokenData = {
+      _id: userData._id,
+      email: userData.email,
+      name: userData.name,
+      password: userData.password,
+      role: userData.role,
+    } as unknown as UserTokenType;
+    const token = createToken(tokenData);
+
+    res.status(201).json({ message: 'Successfully created!', token });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError)
       console.error(error.errors);
