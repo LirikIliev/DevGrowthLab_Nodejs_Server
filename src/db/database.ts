@@ -1,11 +1,11 @@
 import { connect } from 'mongoose';
-import { DATABASE_URL } from './config';
+import { DATABASE_MESSAGES, DATABASE_URL } from './config';
 
 export const databaseConnection = (cb: () => void) => {
   connect(DATABASE_URL)
     .then(() => {
-      console.log('Database is successfully connected!');
+      console.log(DATABASE_MESSAGES.SUCCESS);
       cb();
     })
-    .catch(() => console.error('Unsuccessful connection with database!'));
+    .catch(() => console.error(DATABASE_MESSAGES.FAIL));
 };
