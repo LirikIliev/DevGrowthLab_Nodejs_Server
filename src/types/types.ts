@@ -1,4 +1,14 @@
+import { Types } from 'mongoose';
+
 export type MongooseSearchingType = { [key: string | number]: string | number };
+
+export type UserTokenType = {
+  _id: Types.ObjectId;
+  email: string;
+  password: string;
+  name: string;
+  role: string;
+};
 
 export type UserModelDataType = {
   email: string;
