@@ -4,11 +4,7 @@ import productHandler from '../services/product';
 import { ProductModelDataType } from '../types/types';
 import { hasEmptyFields } from '../routes/helpers/helpers';
 import { PRODUCT_FORM_KEYS } from './config';
-import {
-  addProductToUser,
-  findUser,
-  rmvProductFromUser,
-} from '../services/auth';
+import userHandler from '../services/auth';
 
 type ProductQueryType = { productId: string };
 type ProductUpdateRemoveQuery = { productId: string; userId: string };
@@ -47,13 +43,6 @@ const addNewProduct: RequestHandler<ProductAddNewQuery> = async (req, res) => {
   }
 
   try {
-    const user = await findUser({ _id: userId });
-
-    if (!user?.role || user.role !== 'admin') {
-      res.status(401).json({ message: 'Your are not authorized!' });
-      return;
-    }
-
     const productBody = JSON.parse(JSON.stringify({ ...body, admin: userId }));
     const newProduct = await productHandler.addNewProductToDb(productBody);
     if (
@@ -64,7 +53,7 @@ const addNewProduct: RequestHandler<ProductAddNewQuery> = async (req, res) => {
       return;
     }
 
-    await addProductToUser(body.admin, newProduct._id);
+    await userHandler.addProductToUser(body.admin, newProduct._id);
     res.status(200).json({ message: 'New added product', newProduct });
   } catch (error) {
     //! to create error handler functionality!!!
@@ -87,19 +76,6 @@ const updateProduct: RequestHandler<ProductUpdateRemoveQuery> = async (
   }
 
   try {
-    const user = await findUser({ _id: userId });
-
-    if (!user) {
-      res.status(400).json({ message: 'User was not found!' });
-      return;
-    }
-    const isAdmin = user.role === 'admin';
-
-    if (!isAdmin) {
-      res.status(401).json({ message: 'User is not authorized!' });
-      return;
-    }
-
     const updatedBodyData = JSON.parse(
       JSON.stringify({ ...body, admin: userId, updatedAt: new Date() })
     );
@@ -120,20 +96,8 @@ const removeProduct: RequestHandler<ProductUpdateRemoveQuery> = async (
   const userId = req.params.userId;
 
   try {
-    const user = await findUser({ _id: userId });
-    if (!user) {
-      res.status(404).json({ message: 'User is not found!' });
-      return;
-    }
-
-    const isAdmin = user.role === 'admin';
-    if (!isAdmin) {
-      res.status(401).json({ message: 'The user is not authorized!' });
-      return;
-    }
-
     await productHandler.rmvProductById(productId);
-    await rmvProductFromUser(userId, productId);
+    await userHandler.rmvProductFromUser(userId, productId);
     res.status(200).json({ message: 'The product was successfully removed!' });
   } catch (error) {
     res.status(400).json(error);

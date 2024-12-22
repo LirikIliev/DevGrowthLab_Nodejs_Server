@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import { UserLoginDataType, UserModelDataType } from '../types/types';
 import { USER_FORM_KEYS } from './config';
 import { hasEmptyFields } from '../routes/helpers/helpers';
-import { addNewUser, emailCheck, findUser } from '../services/auth';
+import userHandler from '../services/auth';
 import { BCRYPT_SALT } from '../config/config';
 
 const postLoginRequestHandler: RequestHandler<UserLoginDataType> = async (
@@ -23,7 +23,7 @@ const postLoginRequestHandler: RequestHandler<UserLoginDataType> = async (
   }
 
   try {
-    const user = await findUser({ email: body.email });
+    const user = await userHandler.findUser({ email: body.email });
     const userPass = user?.password ? user.password : '';
     const isPasswordCorrect = await bcrypt.compare(body.password, userPass);
 
@@ -49,7 +49,7 @@ const postRegistrationRequestHandler: RequestHandler = async (req, res) => {
 
   try {
     const { password, ...rest } = body;
-    const hasEmailAlreadyExist = await emailCheck(body.email);
+    const hasEmailAlreadyExist = await userHandler.emailCheck(body.email);
     if (hasEmailAlreadyExist) {
       res.status(409).json({ message: 'The email already exist!' });
     }
@@ -60,7 +60,7 @@ const postRegistrationRequestHandler: RequestHandler = async (req, res) => {
       ...rest,
     };
 
-    const userData = await addNewUser(hashedData);
+    const userData = await userHandler.addNewUser(hashedData);
 
     res.status(201).json({ message: 'Successfully created!', userData });
   } catch (error) {

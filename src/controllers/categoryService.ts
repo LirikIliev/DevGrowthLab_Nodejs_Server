@@ -11,14 +11,15 @@ import {
 import { CategoryModelDataType } from '../types/types';
 import { hasEmptyFields } from '../routes/helpers/helpers';
 import { CATEGORY_FORM_KEYS } from './config';
-import { addCategoryToUser, rmvCategoryFromUser } from '../services/auth';
+import userHandler from '../services/auth';
+import { USERS_ROLE } from '../config/config';
 
 type CategoryQueryType = {
   categoryId: string;
 };
 
 interface PrivateCategoryQueryType extends CategoryQueryType {
-  adminId: string;
+  userId: string;
 }
 
 const getListOfCategory: RequestHandler = async (req, res) => {
@@ -42,10 +43,11 @@ const getCategoryById: RequestHandler<CategoryQueryType> = async (req, res) => {
     res.status(404).json({ message: error });
   }
 };
+
 const addNewCategory: RequestHandler = async (req, res) => {
   const body = req.body as CategoryModelDataType;
-
   const hasBodyEmptyFields = hasEmptyFields(CATEGORY_FORM_KEYS, body);
+  const userId = req.params.userId;
 
   if (hasBodyEmptyFields) {
     res.status(412).json({ message: 'Body is not corrected fulfilled!' });
@@ -59,12 +61,16 @@ const addNewCategory: RequestHandler = async (req, res) => {
       return;
     }
 
-    const userId = body.admin;
-    //! To check if user is role of admin!
-    const newCategory = await addNewCategoryToDb(body);
+    const updatedBody = JSON.parse(
+      JSON.stringify({
+        ...body,
+        admin: userId,
+      })
+    );
+    const newCategory = await addNewCategoryToDb(updatedBody);
     const categoryId = newCategory._id;
 
-    if (categoryId) await addCategoryToUser(userId, categoryId);
+    if (categoryId) await userHandler.addCategoryToUser(userId, categoryId);
     res
       .status(201)
       .json({ message: 'Category was successfully added', newCategory });
@@ -80,10 +86,9 @@ const updateCategory: RequestHandler<PrivateCategoryQueryType> = async (
 ) => {
   const body = req.body as CategoryModelDataType;
   const categoryId = req.params.categoryId;
-  const adminId = req.params.adminId;
+  const { userId } = req.params;
 
   const hasBodyEmptyFields = hasEmptyFields(CATEGORY_FORM_KEYS, body);
-
   if (hasBodyEmptyFields) {
     res.status(412).json({ message: 'The body is not correct fulfilled!' });
     return;
@@ -91,22 +96,24 @@ const updateCategory: RequestHandler<PrivateCategoryQueryType> = async (
 
   try {
     const category = await findCategoryById(categoryId);
-
     if (!category) {
       res.status(404).json({ message: 'The category is not exist' });
       return;
     }
 
-    const isUserAuthor = category.admin.toString() === adminId;
+    const isUserAuthor = category.admin.toString() === userId;
     if (!isUserAuthor) {
       res.status(401).json({ message: 'The user is not authorized!' });
       return;
     }
 
-    const updatedBody = {
-      ...body,
-      updatedAt: new Date(),
-    };
+    const updatedBody = JSON.parse(
+      JSON.stringify({
+        ...body,
+        admin: userId,
+        updatedAt: new Date(),
+      })
+    );
     const updatedCategory = await updCategory(categoryId, updatedBody);
     res
       .status(200)
@@ -121,7 +128,7 @@ const removeCategory: RequestHandler<PrivateCategoryQueryType> = async (
   res
 ) => {
   const categoryId = req.params.categoryId;
-  const adminId = req.params.adminId;
+  const { userId } = req.params;
 
   try {
     const category = await findCategoryById(categoryId);
@@ -131,7 +138,7 @@ const removeCategory: RequestHandler<PrivateCategoryQueryType> = async (
       return;
     }
 
-    const isUserAuthor = category.admin.toString() === adminId;
+    const isUserAuthor = category.admin.toString() === userId;
     if (!isUserAuthor) {
       res
         .status(401)
@@ -140,7 +147,7 @@ const removeCategory: RequestHandler<PrivateCategoryQueryType> = async (
     }
 
     await rmvCategory(categoryId);
-    await rmvCategoryFromUser(adminId, categoryId);
+    await userHandler.rmvCategoryFromUser(userId, categoryId);
     res.status(200).json({ message: 'Category was successfully removed.' });
   } catch (error) {
     res.status(404).json({ message: error });
