@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import categoryService from '../controllers/categoryService';
+import { adminCheckMiddleware } from '../middlewares/adminCheckMiddleware';
 
 const router = Router();
 
@@ -8,15 +9,21 @@ router.get('/public/list-of-categories', categoryService.getListOfCategory);
 // GET => get category by id;
 router.get('/public/:categoryId/category', categoryService.getCategoryById);
 //POST => add new category;
-router.post('/private/new/add-category', categoryService.addNewCategory);
+router.post(
+  '/private/:userId/add-new-category',
+  adminCheckMiddleware,
+  categoryService.addNewCategory
+);
 //PUT =>  update category;
 router.put(
-  '/private/:adminId/:categoryId/update-category',
+  '/private/:userId/:categoryId/update-category',
+  adminCheckMiddleware,
   categoryService.updateCategory
 );
 //DELETE => remove categories;
 router.delete(
-  '/private/:adminId/:categoryId/remove-category',
+  '/private/:userId/:categoryId/remove-category',
+  adminCheckMiddleware,
   categoryService.removeCategory
 );
 
