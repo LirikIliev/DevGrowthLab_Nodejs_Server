@@ -11,5 +11,3 @@ export const USERS_ROLE = {
   ADMIN: 'admin',
   GUEST: 'guest',
 };
-
-console.log('test');
