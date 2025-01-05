@@ -13,7 +13,7 @@ type CategoryQueryType = {
 const getListOfCategory: RequestHandler = async (req, res) => {
   try {
     const categories = await categoryService.getCategories();
-    res.status(200).json({ message: 'Categories', categories });
+    res.status(200).json(categories);
   } catch (error) {
     //! to add error handling functionality
     res.status(400).json(error);
@@ -25,7 +25,7 @@ const getCategoryById: RequestHandler<CategoryQueryType> = async (req, res) => {
   try {
     const category = await categoryService.findCategoryById(categoryId);
 
-    res.status(200).json({ message: 'Category', category });
+    res.status(200).json(category);
   } catch (error) {
     //! to create error handling function.
     res.status(404).json({ message: error });
