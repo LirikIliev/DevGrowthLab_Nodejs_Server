@@ -38,8 +38,6 @@ const UserSchema = new Schema<IUser>({
       message: ERROR_MESSAGES.URL('avatar'),
     },
   },
-  categories: [{ type: Schema.ObjectId }],
-  products: [{ type: Schema.ObjectId }],
   creationAt: {
     type: Date,
     default: new Date(),
