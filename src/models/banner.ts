@@ -8,20 +8,6 @@ const bannerSchema = new Schema({
     type: Date,
     default: new Date(),
   },
-  category: {
-    type: String,
-    required: [true, ERROR_MESSAGES.REQUIRE('Brand Category')],
-  },
-  name: {
-    type: String,
-    required: [true, ERROR_MESSAGES.REQUIRE('Name')],
-  },
-  description: {
-    type: String,
-    required: [true, ERROR_MESSAGES.REQUIRE('Description')],
-    minLength: [10, ERROR_MESSAGES.MIN_LENGTH(10)],
-    maxLength: [550, ERROR_MESSAGES.MAX_LENGTH(550)],
-  },
   image: {
     type: String,
     required: [true, ERROR_MESSAGES.REQUIRE('Image')],
