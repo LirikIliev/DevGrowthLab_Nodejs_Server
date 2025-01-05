@@ -13,10 +13,7 @@ type ProductAddNewQuery = { userId: string };
 const getListOfProducts: RequestHandler = async (_, res) => {
   try {
     const products = await productHandler.getAllProducts();
-    res.status(200).json({
-      message: 'Products',
-      products,
-    });
+    res.status(200).json(products);
   } catch (error) {
     console.error(error);
   }
@@ -26,7 +23,7 @@ const getProductById: RequestHandler<ProductQueryType> = async (req, res) => {
   const productId = req.params.productId;
   try {
     const product = await productHandler.findProductById(productId);
-    res.status(200).json({ message: 'Product', product });
+    res.status(200).json(product);
   } catch (error) {
     res.status(400).json(error);
   }
@@ -43,7 +40,7 @@ const addNewProduct: RequestHandler<ProductAddNewQuery> = async (req, res) => {
   }
 
   try {
-    const productBody = JSON.parse(JSON.stringify({ ...body, admin: userId }));
+    const productBody = JSON.parse(JSON.stringify(body));
     const newProduct = await productHandler.addNewProductToDb(productBody);
     if (
       typeof newProduct !== 'object' &&
@@ -54,7 +51,7 @@ const addNewProduct: RequestHandler<ProductAddNewQuery> = async (req, res) => {
     }
 
     await userHandler.addProductToUser(body.admin, newProduct._id);
-    res.status(200).json({ message: 'New added product', newProduct });
+    res.status(200).json(newProduct);
   } catch (error) {
     //! to create error handler functionality!!!
     res.status(400).json(error);
