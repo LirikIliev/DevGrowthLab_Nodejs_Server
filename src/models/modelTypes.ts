@@ -1,4 +1,4 @@
-import { Model, ObjectId, Schema, Types } from 'mongoose';
+import { Model, ObjectId, Types } from 'mongoose';
 
 export interface IUser extends Document {
   _id?: string;
@@ -7,8 +7,6 @@ export interface IUser extends Document {
   name: string;
   role: string;
   avatar: string;
-  categories?: Schema.Types.ObjectId[];
-  products?: Schema.Types.ObjectId[];
   creationAt: Date;
   updatedAt: Date;
 }

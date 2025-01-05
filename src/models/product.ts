@@ -35,10 +35,6 @@ const ProductSchema = new Schema({
     type: Schema.ObjectId,
     ref: 'Categories',
   },
-  admin: {
-    type: Schema.ObjectId,
-    ref: 'Users',
-  },
 });
 
 export default model('Product', ProductSchema);
