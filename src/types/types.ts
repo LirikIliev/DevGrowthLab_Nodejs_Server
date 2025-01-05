@@ -41,3 +41,11 @@ export type CategoryModelDataType = {
   updatedAt: Date;
   admin: string;
 };
+
+export type BannerModelDateType = {
+  date?: string | Date;
+  category: string;
+  name: string;
+  description: string;
+  image: string;
+};
