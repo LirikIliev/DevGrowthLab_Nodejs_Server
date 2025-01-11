@@ -5,6 +5,7 @@ import authRoutes from './src/routes/authRoutes';
 import productRoutes from './src/routes/productRoutes';
 import categoryRoutes from './src/routes/category';
 import bannerRoutes from './src/routes/banner';
+import brandsRoute from './src/routes/brand';
 import { databaseConnection } from './src/db/database';
 import { headersMiddleware } from './src/middlewares/headersMiddleware';
 
@@ -18,6 +19,7 @@ app.use('/user', authRoutes);
 app.use('/product', productRoutes);
 app.use('/category', categoryRoutes);
 app.use('/banner', bannerRoutes);
+app.use('/brands', brandsRoute);
 
 const serverConnection = () =>
   app.listen(SERVER_PORT, () =>
