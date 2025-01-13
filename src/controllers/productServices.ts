@@ -8,11 +8,38 @@ import { hasEmptyFields } from '../routes/helpers/helpers';
 
 type ProductQueryType = { productId: string };
 type ProductUpdateRemoveQuery = { productId: string; userId: string };
-type ProductAddNewQuery = { userId: string };
+type ProductCategoryQueryType = { categoryId: string };
+type ProductTypeQueryType = { typeName: string };
 
 const getListOfProducts: RequestHandler = async (_, res) => {
   try {
     const products = await productHandler.getAllProducts();
+    res.status(200).json(products);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const getProductsByCategory: RequestHandler<ProductCategoryQueryType> = async (
+  req,
+  res
+) => {
+  try {
+    const { categoryId } = req.params;
+    const products = await productHandler.getProductsByCategoryId(categoryId);
+    res.status(200).json(products);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const getProductsByType: RequestHandler<ProductTypeQueryType> = async (
+  req,
+  res
+) => {
+  try {
+    const { typeName } = req.params;
+    const products = await productHandler.getProductsByType(typeName);
     res.status(200).json(products);
   } catch (error) {
     console.error(error);
@@ -29,9 +56,8 @@ const getProductById: RequestHandler<ProductQueryType> = async (req, res) => {
   }
 };
 
-const addNewProduct: RequestHandler<ProductAddNewQuery> = async (req, res) => {
+const addNewProduct: RequestHandler = async (req, res) => {
   const body = req.body as ProductModelDataType;
-  const userId = req.params.userId;
   const hasBodyEmptyFields = hasEmptyFields(PRODUCT_FORM_KEYS, body);
 
   if (hasBodyEmptyFields) {
@@ -50,10 +76,10 @@ const addNewProduct: RequestHandler<ProductAddNewQuery> = async (req, res) => {
       return;
     }
 
-    await userHandler.addProductToUser(body.admin, newProduct._id);
+    await userHandler.addProductToUser(newProduct._id);
     res.status(200).json(newProduct);
   } catch (error) {
-    //! to create error handler functionality!!!
+    console.log(error);
     res.status(400).json(error);
   }
 };
@@ -64,7 +90,6 @@ const updateProduct: RequestHandler<ProductUpdateRemoveQuery> = async (
 ) => {
   const body = req.body as ProductModelDataType;
   const productId = req.params.productId;
-  const userId = req.params.userId;
   const hasBodyEmptyFields = hasEmptyFields(PRODUCT_FORM_KEYS, body);
 
   if (hasBodyEmptyFields) {
@@ -74,15 +99,14 @@ const updateProduct: RequestHandler<ProductUpdateRemoveQuery> = async (
 
   try {
     const updatedBodyData = JSON.parse(
-      JSON.stringify({ ...body, admin: userId, updatedAt: new Date() })
+      JSON.stringify({ ...body, updatedAt: new Date() })
     );
     await productHandler.updProductById(productId, updatedBodyData);
   } catch (error) {
-    // ! to create and user error handler extract function!
     res.status(400).json(error);
   }
 
-  res.json({ message: 'Success request for product update.', product: body });
+  res.status(200).json(body);
 };
 
 const removeProduct: RequestHandler<ProductUpdateRemoveQuery> = async (
@@ -90,11 +114,10 @@ const removeProduct: RequestHandler<ProductUpdateRemoveQuery> = async (
   res
 ) => {
   const productId = req.params.productId;
-  const userId = req.params.userId;
 
   try {
     await productHandler.rmvProductById(productId);
-    await userHandler.rmvProductFromUser(userId, productId);
+    await userHandler.rmvProductFromUser(productId);
     res.status(200).json({ message: 'The product was successfully removed!' });
   } catch (error) {
     res.status(400).json(error);
@@ -103,6 +126,8 @@ const removeProduct: RequestHandler<ProductUpdateRemoveQuery> = async (
 
 export default {
   getListOfProducts,
+  getProductsByCategory,
+  getProductsByType,
   getProductById,
   addNewProduct,
   updateProduct,

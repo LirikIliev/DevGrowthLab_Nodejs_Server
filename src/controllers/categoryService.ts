@@ -5,6 +5,7 @@ import categoryService from '../services/category';
 import { CategoryModelDataType } from '../types/types';
 import userHandler from '../services/auth';
 import { hasEmptyFields } from '../routes/helpers/helpers';
+import { USERS_ROLE } from '../config/config';
 
 type CategoryQueryType = {
   categoryId: string;
@@ -35,9 +36,10 @@ const getCategoryById: RequestHandler<CategoryQueryType> = async (req, res) => {
 const addNewCategory: RequestHandler = async (req, res) => {
   const body = req.body as CategoryModelDataType;
   const hasBodyEmptyFields = hasEmptyFields(CATEGORY_FORM_KEYS, body);
-  const userId = req.user?._id;
+  const userRole = req.user?.role;
 
-  if (!userId) {
+  const isUserAdmin = userRole === USERS_ROLE.ADMIN;
+  if (!isUserAdmin) {
     res.status(401).json({ message: 'User is not authenticated!' });
     return;
   }
@@ -51,21 +53,21 @@ const addNewCategory: RequestHandler = async (req, res) => {
     const isCategoryExist = await categoryService.checkCategory({
       name: body.name,
     });
+
     if (isCategoryExist) {
       res.status(412).json({ message: 'This category already exist.' });
       return;
     }
-
     const updatedBody = JSON.parse(
       JSON.stringify({
         ...body,
-        admin: userId,
+        admin: userRole,
       })
     );
     const newCategory = await categoryService.addNewCategory(updatedBody);
     const categoryId = newCategory._id;
 
-    if (categoryId) await userHandler.addCategoryToUser(userId, categoryId);
+    if (categoryId) await userHandler.addCategoryToUser(categoryId);
     res
       .status(201)
       .json({ message: 'Category was successfully added', newCategory });
@@ -79,6 +81,7 @@ const updateCategory: RequestHandler<CategoryQueryType> = async (req, res) => {
   const body = req.body as CategoryModelDataType;
   const categoryId = req.params.categoryId;
   const userId = req.user?._id;
+  const userRole = req.user?.role;
 
   const hasBodyEmptyFields = hasEmptyFields(CATEGORY_FORM_KEYS, body);
   if (hasBodyEmptyFields) {
@@ -93,8 +96,8 @@ const updateCategory: RequestHandler<CategoryQueryType> = async (req, res) => {
       return;
     }
 
-    const isUserAuthor = category.admin.toString() === userId;
-    if (!isUserAuthor) {
+    const isUserAdmin = userRole === USERS_ROLE.ADMIN;
+    if (!isUserAdmin) {
       res.status(401).json({ message: 'The user is not authorized!' });
       return;
     }
@@ -120,7 +123,7 @@ const updateCategory: RequestHandler<CategoryQueryType> = async (req, res) => {
 
 const removeCategory: RequestHandler<CategoryQueryType> = async (req, res) => {
   const categoryId = req.params.categoryId;
-  const userId = req.user?._id;
+  const userRole = req.user?.role;
 
   try {
     const category = await categoryService.findCategoryById(categoryId);
@@ -130,8 +133,8 @@ const removeCategory: RequestHandler<CategoryQueryType> = async (req, res) => {
       return;
     }
 
-    const isUserAuthor = category.admin.toString() === userId;
-    if (!isUserAuthor) {
+    const isUserAdmin = userRole === USERS_ROLE.ADMIN;
+    if (!isUserAdmin) {
       res
         .status(401)
         .json({ message: 'The user is not authorized for this operation!' });
@@ -139,7 +142,7 @@ const removeCategory: RequestHandler<CategoryQueryType> = async (req, res) => {
     }
 
     await categoryService.rmvCategory(categoryId);
-    await userHandler.rmvCategoryFromUser(userId, categoryId);
+    await userHandler.rmvCategoryFromUser(categoryId);
     res.status(200).json({ message: 'Category was successfully removed.' });
   } catch (error) {
     res.status(404).json({ message: error });

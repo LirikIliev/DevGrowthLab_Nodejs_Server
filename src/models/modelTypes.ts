@@ -1,4 +1,4 @@
-import { Model, ObjectId, Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 export interface IUser extends Document {
   _id?: string;
@@ -13,10 +13,10 @@ export interface IUser extends Document {
 
 export interface IUserModel extends Model<IUser> {
   isEmailExist(email: string): Promise<boolean>;
-  addCategory(userId: string, categoryId: Types.ObjectId): Promise<IUser>;
-  removeCategory(userId: string, categoryId: string): Promise<IUser>;
-  addProduct(userId: string, productId: Types.ObjectId): Promise<IUser>;
-  removeProduct(userId: string, productId: string): Promise<IUser>;
+  addCategory(categoryId: Types.ObjectId): Promise<IUser>;
+  removeCategory(categoryId: string): Promise<IUser>;
+  addProduct(productId: Types.ObjectId): Promise<IUser>;
+  removeProduct(productId: string): Promise<IUser>;
 }
 
 export interface ICategory extends Document {
@@ -24,7 +24,6 @@ export interface ICategory extends Document {
   image: string;
   createdAt: Date;
   updatedAt: Date;
-  admin: ObjectId;
 }
 
 type MongooseSearchingType = { [key: string | number]: string | number };

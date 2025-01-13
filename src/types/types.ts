@@ -25,13 +25,17 @@ export type UserLoginDataType = {
 
 export type ProductModelDataType = {
   title: string;
+  brand: string;
+  type: string;
   price: number;
-  description: string;
+  gender: string;
+  sizes: (string | number)[];
   images: string[];
+  color: string;
+  colors?: string[];
   creationAt: Date;
   updatedAt: Date;
   category: string;
-  admin: string;
 };
 
 export type CategoryModelDataType = {

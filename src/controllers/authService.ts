@@ -50,7 +50,14 @@ const postLoginRequestHandler: RequestHandler<UserLoginDataType> = async (
       role: user.role,
     } as unknown as UserTokenType;
     const token = createToken(tokenData);
-    res.status(200).json({ message: 'User is logged successfully!', token });
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      avatar: user.avatar,
+      token,
+    });
   } catch (error) {
     //! to set error handling functionality!
     console.error(error);

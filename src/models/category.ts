@@ -27,11 +27,6 @@ const CategorySchema = new Schema<ICategory>({
     type: Date,
     default: new Date(),
   },
-  admin: {
-    type: Schema.ObjectId,
-    ref: 'Users',
-    required: [true, ERROR_MESSAGES.REQUIRE('Admin id')],
-  },
 });
 
 CategorySchema.statics.isCategoryExist = async function (

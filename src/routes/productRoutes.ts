@@ -10,6 +10,16 @@ const router = Router();
 router.get(ROUTE_PATHS.GET_PRODUCTS, productHandlers.getListOfProducts);
 // GET => get product by id;
 router.get(ROUTE_PATHS.GET_PRODUCT, productHandlers.getProductById);
+// GET => get product by categories
+router.get(
+  ROUTE_PATHS.GET_PRODUCT_BY_CATEGORY,
+  productHandlers.getProductsByCategory
+);
+// GET => get products by typeName;
+router.get(
+  ROUTE_PATHS.GET_PRODUCT_BY_TYPE_NAME,
+  productHandlers.getProductsByType
+);
 // POST => add new product;
 router.post(
   ROUTE_PATHS.ADD_PRODUCT,

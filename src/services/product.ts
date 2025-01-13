@@ -2,6 +2,10 @@ import Product from '../models/product';
 import { ProductModelDataType } from '../types/types';
 
 const getAllProducts = () => Product.find();
+const getProductsByCategoryId = (categoryId: string) =>
+  Product.find({ category: categoryId });
+const getProductsByType = (typeName: string) =>
+  Product.find({ type: typeName });
 const findProductById = (productId: string) =>
   Product.findOne({ id: productId });
 const addNewProductToDb = (data: ProductModelDataType) =>
@@ -13,6 +17,8 @@ const rmvProductById = (productId: string) =>
 
 export default {
   getAllProducts,
+  getProductsByCategoryId,
+  getProductsByType,
   findProductById,
   addNewProductToDb,
   updProductById,

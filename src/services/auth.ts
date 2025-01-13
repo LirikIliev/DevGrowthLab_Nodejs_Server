@@ -13,14 +13,13 @@ const findUserById = (userId: string): Promise<IUser | null> =>
   User.findById(userId);
 const addNewUser = (data: UserModelDataType) => new User(data).save();
 const emailCheck = (email: string) => User.isEmailExist(email);
-const addCategoryToUser = (userId: string, categoryId: Types.ObjectId) =>
-  User.addCategory(userId, categoryId);
-const rmvCategoryFromUser = (userId: string, categoryId: string) =>
-  User.removeCategory(userId, categoryId);
-const addProductToUser = (userId: string, productId: Types.ObjectId) =>
-  User.addProduct(userId, productId);
-const rmvProductFromUser = (userId: string, productId: string) =>
-  User.removeProduct(userId, productId);
+const addCategoryToUser = (categoryId: Types.ObjectId) =>
+  User.addCategory(categoryId);
+const rmvCategoryFromUser = (categoryId: string) =>
+  User.removeCategory(categoryId);
+const addProductToUser = (productId: Types.ObjectId) =>
+  User.addProduct(productId);
+const rmvProductFromUser = (productId: string) => User.removeProduct(productId);
 
 export default {
   findUsers,
