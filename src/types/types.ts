@@ -14,7 +14,7 @@ export type UserModelDataType = {
   email: string;
   password: string;
   name: string;
-  role: string;
+  role?: string;
   avatar: string;
 };
 

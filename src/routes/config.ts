@@ -1,6 +1,6 @@
 const paths = {
-  LOGIN: '/auth/login',
-  REGISTER: '/auth/registration',
+  LOGIN: '/public/auth/login',
+  REGISTER: '/public/auth/registration',
   GET_CATEGORIES: '/public/list-of-categories',
   GET_CATEGORY: '/public/:categoryId/category',
   ADD_CATEGORY: '/private/add-new-category',

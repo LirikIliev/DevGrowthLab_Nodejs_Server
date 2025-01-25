@@ -59,8 +59,7 @@ const postLoginRequestHandler: RequestHandler<UserLoginDataType> = async (
       token,
     });
   } catch (error) {
-    //! to set error handling functionality!
-    console.error(error);
+    res.status(404).json(error);
   }
 };
 
@@ -85,24 +84,10 @@ const postRegistrationRequestHandler: RequestHandler = async (req, res) => {
       password: hashedPassword,
       ...rest,
     };
+    await userHandler.addNewUser(hashedData);
 
-    const userData = await userHandler.addNewUser(hashedData);
-
-    const tokenData = {
-      _id: userData._id,
-      email: userData.email,
-      name: userData.name,
-      password: userData.password,
-      role: userData.role,
-    } as unknown as UserTokenType;
-    const token = createToken(tokenData);
-
-    res.status(201).json({ message: 'Successfully created!', token });
+    res.status(201).json({ message: 'User is successfully registered!' });
   } catch (error) {
-    if (error instanceof mongoose.Error.ValidationError)
-      console.error(error.errors);
-    console.log(error);
-    //! to create universal error handling/translation function!
     res.status(400).json({ message: 'Incorrect form fulfilled!' });
   }
 };

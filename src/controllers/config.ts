@@ -1,10 +1,4 @@
-export const USER_FORM_KEYS = [
-  'email',
-  'password',
-  'name',
-  'role',
-  'avatar',
-] as const;
+export const USER_FORM_KEYS = ['email', 'password', 'name', 'avatar'] as const;
 export const PRODUCT_FORM_KEYS = [
   'title',
   'brand',
