@@ -1,5 +1,7 @@
 import { model, Schema, Types } from 'mongoose';
 import { ERROR_MESSAGES } from './config';
+import { IProduct, Product } from './modelTypes';
+import product from '../services/product';
 
 const ProductSchema = new Schema({
   title: {
@@ -26,17 +28,29 @@ const ProductSchema = new Schema({
     required: [true, ERROR_MESSAGES.REQUIRE('Gender')],
   },
   images: {
-    type: Array,
-    require: [true, ERROR_MESSAGES.REQUIRE('Images')],
+    type: [String],
+    required: [true, ERROR_MESSAGES.REQUIRE('Images')],
   },
   sizes: {
-    type: [Schema.Types.Mixed],
-    required: [true, ERROR_MESSAGES.REQUIRE('Product sizes')],
-    validate: {
-      validator: function (value: (number | string)[]) {
-        return Array.isArray(value) && value.length > 0;
+    type: [
+      {
+        size: {
+          type: Schema.Types.Mixed,
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          required: true,
+        },
       },
-      message: ERROR_MESSAGES.REQUIRE('Product sizes'),
+    ],
+    required: [true, ERROR_MESSAGES.REQUIRE('Product sizes')],
+    ref: 'Product',
+    validate: {
+      validator: function (value: { [key: string]: number | string }[]) {
+        return value.length > 0;
+      },
+      message: 'At least one size must be provided!',
     },
   },
   color: {
@@ -48,6 +62,10 @@ const ProductSchema = new Schema({
     default: [],
     ref: 'Product',
   },
+  category: {
+    type: Schema.Types.ObjectId,
+    ref: 'Categories',
+  },
   creationAt: {
     type: Date,
     required: [true, ERROR_MESSAGES.REQUIRE('Creation date')],
@@ -58,10 +76,26 @@ const ProductSchema = new Schema({
     required: [true, ERROR_MESSAGES.REQUIRE('Updated date')],
     default: () => new Date(),
   },
-  category: {
-    type: Schema.Types.ObjectId,
-    ref: 'Categories',
-  },
 });
 
-export default model('Product', ProductSchema);
+ProductSchema.statics.colorsUpdate = async function (
+  productId: Types.ObjectId,
+  productName: string
+) {
+  const products = await this.find({
+    title: new RegExp(productName, 'i'),
+    _id: { $ne: productId },
+  }).lean();
+
+  //! to add in new product all other products!
+
+  if (products.length > 0) {
+    const updates = products.map((product: Product) =>
+      this.updateOne({ _id: product?._id }, { $push: { colors: productId } })
+    );
+
+    await Promise.all(updates);
+  }
+};
+
+export default model<Product, IProduct>('Product', ProductSchema);
