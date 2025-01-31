@@ -1,5 +1,5 @@
+import { IProduct } from '../models/modelTypes';
 import Product from '../models/product';
-import { ProductModelDataType } from '../types/types';
 
 const getAllProducts = () => Product.find();
 const getProductsByCategoryId = (categoryId: string) =>
@@ -7,10 +7,9 @@ const getProductsByCategoryId = (categoryId: string) =>
 const getProductsByType = (typeName: string) =>
   Product.find({ type: typeName });
 const findProductById = (productId: string) =>
-  Product.findOne({ id: productId });
-const addNewProductToDb = (data: ProductModelDataType) =>
-  new Product(data).save();
-const updProductById = (productId: string, data: ProductModelDataType) =>
+  Product.findOne({ _id: productId });
+const addNewProductToDb = (data: IProduct) => new Product(data).save();
+const updProductById = (productId: string, data: IProduct) =>
   Product.findByIdAndUpdate(productId, data);
 const rmvProductById = (productId: string) =>
   Product.findByIdAndDelete(productId);
