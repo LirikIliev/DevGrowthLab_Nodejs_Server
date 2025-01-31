@@ -23,21 +23,6 @@ export type UserLoginDataType = {
   password: string;
 };
 
-export type ProductModelDataType = {
-  title: string;
-  brand: string;
-  type: string;
-  price: number;
-  gender: string;
-  sizes: (string | number)[];
-  images: string[];
-  color: string;
-  colors?: string[];
-  creationAt: Date;
-  updatedAt: Date;
-  category: string;
-};
-
 export type CategoryModelDataType = {
   name: string;
   image: string;
