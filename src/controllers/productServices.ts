@@ -3,8 +3,9 @@ import { RequestHandler } from 'express';
 import { PRODUCT_FORM_KEYS } from './config';
 import userHandler from '../services/auth';
 import productHandler from '../services/product';
-import { ProductModelDataType } from '../types/types';
 import { hasEmptyFields } from '../routes/helpers/helpers';
+import Product from '../models/product';
+import { Product as ProductType } from '../models/modelTypes';
 
 type ProductQueryType = { productId: string };
 type ProductUpdateRemoveQuery = { productId: string; userId: string };
@@ -47,8 +48,8 @@ const getProductsByType: RequestHandler<ProductTypeQueryType> = async (
 };
 
 const getProductById: RequestHandler<ProductQueryType> = async (req, res) => {
-  const productId = req.params.productId;
   try {
+    const productId = req.params.productId;
     const product = await productHandler.findProductById(productId);
     res.status(200).json(product);
   } catch (error) {
@@ -57,7 +58,7 @@ const getProductById: RequestHandler<ProductQueryType> = async (req, res) => {
 };
 
 const addNewProduct: RequestHandler = async (req, res) => {
-  const body = req.body as ProductModelDataType;
+  const body = req.body as ProductType;
   const hasBodyEmptyFields = hasEmptyFields(PRODUCT_FORM_KEYS, body);
 
   if (hasBodyEmptyFields) {
@@ -68,6 +69,7 @@ const addNewProduct: RequestHandler = async (req, res) => {
   try {
     const productBody = JSON.parse(JSON.stringify(body));
     const newProduct = await productHandler.addNewProductToDb(productBody);
+
     if (
       typeof newProduct !== 'object' &&
       Object.keys(newProduct).length === 0
@@ -76,7 +78,9 @@ const addNewProduct: RequestHandler = async (req, res) => {
       return;
     }
 
-    await userHandler.addProductToUser(newProduct._id);
+    const { _id, title } = newProduct;
+    if (_id && title) Product.colorsUpdate(_id, title);
+
     res.status(200).json(newProduct);
   } catch (error) {
     console.log(error);
@@ -88,7 +92,7 @@ const updateProduct: RequestHandler<ProductUpdateRemoveQuery> = async (
   req,
   res
 ) => {
-  const body = req.body as ProductModelDataType;
+  const body = req.body as ProductType;
   const productId = req.params.productId;
   const hasBodyEmptyFields = hasEmptyFields(PRODUCT_FORM_KEYS, body);
 
