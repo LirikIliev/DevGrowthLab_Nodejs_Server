@@ -5,7 +5,6 @@ import categoryService from '../services/category';
 import { CategoryModelDataType } from '../types/types';
 import userHandler from '../services/auth';
 import { hasEmptyFields } from '../routes/helpers/helpers';
-import { USERS_ROLE } from '../config/config';
 
 type CategoryQueryType = {
   categoryId: string;
@@ -16,7 +15,6 @@ const getListOfCategory: RequestHandler = async (req, res) => {
     const categories = await categoryService.getCategories();
     res.status(200).json(categories);
   } catch (error) {
-    //! to add error handling functionality
     res.status(400).json(error);
   }
 };
@@ -28,7 +26,6 @@ const getCategoryById: RequestHandler<CategoryQueryType> = async (req, res) => {
 
     res.status(200).json(category);
   } catch (error) {
-    //! to create error handling function.
     res.status(404).json({ message: error });
   }
 };
@@ -60,7 +57,6 @@ const addNewCategory: RequestHandler = async (req, res) => {
       .status(201)
       .json({ message: 'Category was successfully added', newCategory });
   } catch (error) {
-    //! to create error handler function.
     res.status(400).json({ message: error });
   }
 };

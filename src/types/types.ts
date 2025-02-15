@@ -32,9 +32,10 @@ export type CategoryModelDataType = {
 };
 
 export type BannerModelDateType = {
-  date?: string | Date;
   name: string;
   image: string;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
 };
 
 export type BrandModelDateType = {

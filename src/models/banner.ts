@@ -2,6 +2,7 @@ import { model, Schema } from 'mongoose';
 
 import { ERROR_MESSAGES } from './config';
 import { URL_REGEX } from '../config/config';
+import { Banner, IBanner } from './modelTypes';
 
 const bannerSchema = new Schema({
   date: {
@@ -20,4 +21,10 @@ const bannerSchema = new Schema({
   },
 });
 
-export default model('Banner', bannerSchema);
+bannerSchema.statics.IsBannerExist = async function (data) {
+  const banner = await this.findOne(data);
+
+  return !!banner;
+};
+
+export default model<Banner, IBanner>('Banner', bannerSchema);
