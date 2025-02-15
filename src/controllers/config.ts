@@ -10,4 +10,4 @@ export const PRODUCT_FORM_KEYS = [
   'color',
   'category',
 ] as const;
-export const CATEGORY_FORM_KEYS = ['name', 'image'] as const;
+export const STANDARD_FORM_KEYS = ['name', 'image'] as const;

@@ -15,12 +15,15 @@ const paths = {
   REMOVE_PRODUCT: '/private/:productId/remove-product',
   GET_BANNERS: '/public/banners',
   ADD_BANNER: '/private/add-new-banner/',
+  UPDATE_BANNER: '/private/:bannerId/update-banner',
   REMOVE_BANNER: '/private/:bannerId/remove-banner',
   GET_BRANDS: '/public/brands',
   ADD_BRAND: '/private/add-new-brand',
+  UPDATE_BRAND: '/private/:brandId/update-brand',
   REMOVE_BRAND: '/private/:brandId/remove-brand',
   GET_BLOG_POSTS: '/public/blog-posts',
   ADD_BLOG_POST: '/private/add-new-blog-post',
+  UPDATE_BLOG_POST: '/private/:postId/update-blog-post',
   REMOVE_BLOG_POST: '/private/:postId/remove-blog-post',
 };
 

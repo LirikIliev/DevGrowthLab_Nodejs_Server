@@ -2,6 +2,7 @@ import { model, Schema } from 'mongoose';
 
 import { ERROR_MESSAGES } from './config';
 import { URL_REGEX } from '../config/config';
+import { Brand, IBrand } from './modelTypes';
 
 const brandsSchema = new Schema({
   name: {
@@ -20,4 +21,10 @@ const brandsSchema = new Schema({
   },
 });
 
-export default model('Brand', brandsSchema);
+brandsSchema.statics.IsBrandExist = async function (data) {
+  const brand = await this.findOne(data);
+
+  return !!brand;
+};
+
+export default model<Brand, IBrand>('Brand', brandsSchema);

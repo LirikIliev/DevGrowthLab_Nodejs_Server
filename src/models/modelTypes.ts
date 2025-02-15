@@ -59,6 +59,16 @@ export interface IProduct extends Model<Product> {
   ) => Promise<void>;
 }
 
+export interface Brand {
+  name: string;
+  image: string;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
+}
+export interface IBrand extends Model<Brand> {
+  IsBrandExist: (data: MongooseSearchingType) => Promise<boolean>;
+}
+
 type MongooseSearchingType = { [key: string | number]: string | number };
 export interface ICategoryModel extends Model<ICategory> {
   isCategoryExist: (data: MongooseSearchingType) => Promise<boolean>;
