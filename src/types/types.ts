@@ -42,3 +42,11 @@ export type BrandModelDateType = {
   name: string;
   image: string;
 };
+
+export type BlogPostModelDataType = {
+  name: string;
+  image: string;
+  description: string;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
+};

@@ -59,9 +59,12 @@ export interface IProduct extends Model<Product> {
   ) => Promise<void>;
 }
 
-export interface Brand {
+interface IData {
   name: string;
   image: string;
+}
+
+export interface Brand extends IData {
   createdAt?: string | Date;
   updatedAt?: string | Date;
 }
@@ -69,9 +72,7 @@ export interface IBrand extends Model<Brand> {
   IsBrandExist: (data: MongooseSearchingType) => Promise<boolean>;
 }
 
-export interface Banner {
-  name: string;
-  image: string;
+export interface Banner extends IData {
   createdAt?: string | Date;
   updatedAt?: string | Date;
 }
@@ -80,6 +81,15 @@ export interface IBanner extends Model<Banner> {
   IsBannerExist: (data: MongooseSearchingType) => Promise<boolean>;
 }
 
+export interface BlogPost extends IData {
+  description: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}
+
+export interface IBlogPost extends Model<BlogPost> {
+  IsPostExisting: (data: MongooseSearchingType) => Promise<boolean>;
+}
 type MongooseSearchingType = { [key: string | number]: string | number };
 export interface ICategoryModel extends Model<ICategory> {
   isCategoryExist: (data: MongooseSearchingType) => Promise<boolean>;

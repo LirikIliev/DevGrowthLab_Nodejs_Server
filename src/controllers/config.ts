@@ -11,3 +11,4 @@ export const PRODUCT_FORM_KEYS = [
   'category',
 ] as const;
 export const STANDARD_FORM_KEYS = ['name', 'image'] as const;
+export const POST_FORM_KEYS = ['name', 'image', 'description'] as const;
