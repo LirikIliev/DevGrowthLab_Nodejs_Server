@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 
 import bannerServices from '../services/banner';
 import { hasEmptyFields } from '../routes/helpers/helpers';
-import { STANDARD_FORM_KEYS } from './config';
+import { BANNER_FORM_KEYS } from './config';
 
 const getAllBanners: RequestHandler = async (req, res) => {
   try {
@@ -28,7 +28,7 @@ const getBannerById: RequestHandler = async (req, res) => {
 const addNewBanner: RequestHandler = async (req, res) => {
   const body = req.body;
 
-  const hasBodyEmptyFields = hasEmptyFields(STANDARD_FORM_KEYS, body);
+  const hasBodyEmptyFields = hasEmptyFields(BANNER_FORM_KEYS, body);
 
   if (hasBodyEmptyFields) {
     res.status(412).json({ message: 'The body is not correctly fulfilled!' });
@@ -37,7 +37,7 @@ const addNewBanner: RequestHandler = async (req, res) => {
 
   try {
     const IsBannerExist = await bannerServices.checkForBanner({
-      name: body.name,
+      image: body.image,
     });
 
     if (IsBannerExist) {
@@ -56,7 +56,7 @@ const updateBanner: RequestHandler = async (req, res) => {
   const body = req.body;
   const id = req.params.bannerId;
 
-  const hasBodyEmptyFields = hasEmptyFields(STANDARD_FORM_KEYS, body);
+  const hasBodyEmptyFields = hasEmptyFields(BANNER_FORM_KEYS, body);
 
   if (hasBodyEmptyFields) {
     res.status(412).json({ message: 'Body is not correct fulfilled!' });
