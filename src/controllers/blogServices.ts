@@ -14,6 +14,17 @@ const getAllPosts: RequestHandler = async (_, res) => {
   }
 };
 
+const getPostById: RequestHandler = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const post = await fetchBlogPost.findById(postId);
+
+    res.status(200).json(post);
+  } catch (error) {
+    res.status(404).json(error);
+  }
+};
+
 const addNewPost: RequestHandler = async (req, res) => {
   try {
     const body = req.body;
@@ -27,7 +38,6 @@ const addNewPost: RequestHandler = async (req, res) => {
       const IsPostExisting = await fetchBlogPost.checkForPost({
         name: body.name,
       });
-      console.log(IsPostExisting);
 
       if (IsPostExisting) {
         res.status(404).json('The post is already exist!');
@@ -89,6 +99,7 @@ const removePost: RequestHandler = async (req, res) => {
 
 export default {
   getAllPosts,
+  getPostById,
   addNewPost,
   updatePost,
   removePost,

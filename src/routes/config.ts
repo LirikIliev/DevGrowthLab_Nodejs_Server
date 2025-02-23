@@ -22,6 +22,7 @@ const paths = {
   UPDATE_BRAND: '/private/:brandId/update-brand',
   REMOVE_BRAND: '/private/:brandId/remove-brand',
   GET_BLOG_POSTS: '/public/blog-posts',
+  GET_BLOG_POST_BY_ID: '/public/blog-post/:postId',
   ADD_BLOG_POST: '/private/add-new-blog-post',
   UPDATE_BLOG_POST: '/private/:postId/update-blog-post',
   REMOVE_BLOG_POST: '/private/:postId/remove-blog-post',
