@@ -57,6 +57,7 @@ export interface IProduct extends Model<Product> {
     productId: Types.ObjectId,
     productName: string
   ) => Promise<void>;
+  isProductExist: (data: MongooseSearchingType) => Promise<boolean>;
 }
 
 interface IData {

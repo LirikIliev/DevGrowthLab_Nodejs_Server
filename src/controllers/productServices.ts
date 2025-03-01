@@ -68,6 +68,15 @@ const addNewProduct: RequestHandler = async (req, res) => {
 
   try {
     const productBody = JSON.parse(JSON.stringify(body));
+    const isProductExist = await productHandler.checkProduct({
+      title: body.title,
+    });
+
+    if (isProductExist) {
+      res.status(412).json({ message: 'The product is already exist!' });
+      return;
+    }
+
     const newProduct = await productHandler.addNewProductToDb(productBody);
 
     if (

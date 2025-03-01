@@ -1,7 +1,6 @@
 import { model, Schema, Types } from 'mongoose';
 import { ERROR_MESSAGES } from './config';
 import { IProduct, Product } from './modelTypes';
-import product from '../services/product';
 
 const ProductSchema = new Schema({
   title: {
@@ -96,6 +95,12 @@ ProductSchema.statics.colorsUpdate = async function (
 
     await Promise.all(updates);
   }
+};
+
+ProductSchema.statics.isProductExist = async function (data): Promise<boolean> {
+  const product = await this.findOne(data);
+
+  return !!product;
 };
 
 export default model<Product, IProduct>('Product', ProductSchema);
